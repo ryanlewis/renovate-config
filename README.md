@@ -49,10 +49,24 @@ cooldown look present and not be. The same applies to `bump`, `lockfileUpdate`, 
 `pin` and `replacement`, which is why the last `packageRules` entry refuses to automerge
 those update types.
 
-**Narrow automerge.** Runtime dependencies never automerge. Dev dependencies automerge on
-patch only, after the cooldown. GitHub Actions automerge on digest, because
-`helpers:pinGitHubActionDigests` pins them to SHAs first. Majors are parked on the
-dependency dashboard for a human.
+**Nothing automerges without a cooldown behind it.** This is the governing rule, and it is
+narrower than it first looks, because `minimumReleaseAge` does not apply to every update
+type. Per Renovate's docs it is supported for `major`, `minor` and `patch`; it is **not**
+supported for `pin`, `pinDigest`, `replacement` or (generally) `digest`, and
+`lockFileMaintenance`, `lockfileUpdate`, `rollback` and `bump` ignore it entirely.
+
+So the last `packageRules` entry refuses to automerge all eight of those types, and it is
+last deliberately — later rules win in Renovate, so it overrides any automerge granted
+above it.
+
+What that leaves: runtime dependencies never automerge. Dev dependencies automerge on patch
+only, after the cooldown. GitHub Actions automerge on `minor`/`patch` only — **not** on
+`digest`, even though `helpers:pinGitHubActionDigests` pins them to SHAs, because a digest
+update gets no soak time and a repointed digest is exactly how a compromised action reaches
+you. Majors are parked on the dependency dashboard for a human.
+
+The cost is honest: with actions SHA-pinned, most Actions updates arrive as `digest` and now
+need a manual merge. That is the intended trade.
 
 ## Two things that look redundant and are not
 

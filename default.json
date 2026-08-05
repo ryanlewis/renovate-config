@@ -54,11 +54,11 @@
       "groupName": null
     },
     {
-      "description": "GitHub Actions on their own track, digest-pinned, automerged after the cooldown once CI is green.",
+      "description": "GitHub Actions on their own track, digest-pinned. Automerge only minor/patch, which are the only Actions update types the cooldown actually applies to — digest and pinDigest are handled by the no-cooldown rule below and always get a human.",
       "matchManagers": ["github-actions"],
       "groupName": "github actions",
       "groupSlug": "github-actions",
-      "matchUpdateTypes": ["minor", "patch", "digest", "pinDigest"],
+      "matchUpdateTypes": ["minor", "patch"],
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true
@@ -77,8 +77,17 @@
       "automerge": false
     },
     {
-      "description": "Renovate does not enforce minimumReleaseAge on these update types, so never automerge them.",
-      "matchUpdateTypes": ["bump", "lockfileUpdate", "rollback", "replacement", "lockFileMaintenance"],
+      "description": "Renovate does not enforce minimumReleaseAge on these update types, so never automerge them. Per docs, minimumReleaseAge is supported for major/minor/patch only; it is not supported for pin, pinDigest, replacement or (generally) digest, and lockFileMaintenance, lockfileUpdate, rollback and bump ignore it entirely. Nothing merges without a soak period. This rule is last so it wins over any automerge granted above.",
+      "matchUpdateTypes": [
+        "bump",
+        "digest",
+        "lockFileMaintenance",
+        "lockfileUpdate",
+        "pin",
+        "pinDigest",
+        "replacement",
+        "rollback"
+      ],
       "automerge": false
     }
   ]
