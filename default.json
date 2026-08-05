@@ -1,0 +1,85 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "ryanlewis shared Renovate policy: publish cooldown + strict internal checks + security fast-path + digest pinning + narrow automerge.",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":configMigration",
+    ":pinAllExceptPeerDependencies",
+    "helpers:pinGitHubActionDigests",
+    "docker:pinDigests",
+    "abandonments:recommended"
+  ],
+  "timezone": "Europe/London",
+  "schedule": ["before 9am on monday"],
+  "labels": ["dependencies"],
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+  "rebaseWhen": "conflicted",
+  "minimumReleaseAge": "5 days",
+  "internalChecksFilter": "strict",
+  "prCreation": "not-pending",
+  "ignoreScripts": true,
+  "lockFileMaintenance": { "enabled": false },
+  "osvVulnerabilityAlerts": true,
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "minimumReleaseAge": null,
+    "schedule": [],
+    "groupName": null,
+    "dependencyDashboardApproval": false,
+    "prCreation": "immediate",
+    "automerge": false,
+    "addLabels": ["security"],
+    "commitMessageSuffix": "[SECURITY]"
+  },
+  "packageRules": [
+    {
+      "description": "npm and PyPI have self-serve publish and the worst recent abuse record; longer cooldown than the rest.",
+      "matchDatasources": ["npm", "pypi"],
+      "minimumReleaseAge": "7 days",
+      "internalChecksFilter": "strict"
+    },
+    {
+      "description": "One batched PR a week for everything non-major.",
+      "matchUpdateTypes": ["minor", "patch", "digest", "pin", "pinDigest"],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch"
+    },
+    {
+      "description": "Majors are a human decision; park them on the dashboard.",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true,
+      "groupName": null
+    },
+    {
+      "description": "GitHub Actions on their own track, digest-pinned, automerged after the cooldown once CI is green.",
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions",
+      "groupSlug": "github-actions",
+      "matchUpdateTypes": ["minor", "patch", "digest", "pinDigest"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    },
+    {
+      "description": "Dev dependencies patch-only automerge after the cooldown. Runtime dependencies are never automerged.",
+      "matchDepTypes": ["devDependencies", "dev-dependencies", "dev"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    },
+    {
+      "description": "Runtime dependencies always get a human.",
+      "matchDepTypes": ["dependencies", "require", "import"],
+      "automerge": false
+    },
+    {
+      "description": "Renovate does not enforce minimumReleaseAge on these update types, so never automerge them.",
+      "matchUpdateTypes": ["bump", "lockfileUpdate", "rollback", "replacement", "lockFileMaintenance"],
+      "automerge": false
+    }
+  ]
+}
