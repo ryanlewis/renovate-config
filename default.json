@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "description": "ryanlewis shared Renovate policy: publish cooldown + strict internal checks + security fast-path + digest pinning + narrow automerge.",
+  "description": "Shared Renovate config: wait before updating, let security fixes skip the queue, pin digests, automerge only what waited.",
   "extends": [
     "config:recommended",
     ":dependencyDashboard",
