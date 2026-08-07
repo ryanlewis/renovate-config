@@ -21,6 +21,7 @@
   "internalChecksFilter": "strict",
   "prCreation": "not-pending",
   "ignoreScripts": true,
+  "postUpdateOptions": ["gomodTidy"],
   "lockFileMaintenance": { "enabled": false },
   "osvVulnerabilityAlerts": true,
   "vulnerabilityAlerts": {
