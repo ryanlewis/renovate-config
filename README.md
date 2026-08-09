@@ -54,7 +54,27 @@ at all, and a repointed digest is how a hijacked action would reach me.
 Downside: with actions pinned to SHAs, most Actions updates show up as `digest` and need
 merging by hand. Worth it.
 
-Majors go on the dependency dashboard for me to look at.
+One caveat to keep honest about: an automerged Actions minor/patch repoints the pinned SHA
+too — it just does it via a new tag that sat through the cooldown. For a hijacker publishing
+a new minor tag, the defence is the wait, not my eyes. Same trust model as npm dev patches.
+
+**Grouping is doing as much work as the automerge rules.** Renovate automerges a grouped PR
+only if *every* update in it is automergeable, so anything that can't automerge poisons the
+whole PR it lands in. That's why the groups are split the way they are:
+
+| PR | Contains | Automerges |
+| --- | --- | --- |
+| all non-major dependencies | everything not claimed below | no — runtime deps sit here |
+| dev dependencies (patch) | dev deps, patch only | yes, after the wait |
+| github actions | Actions minor/patch | yes, after the wait |
+| github action digests | Actions digest/pinDigest | no — no cooldown applies |
+| one per major | a single major | no |
+
+Left in one big batch, a runtime minor or an unwaited digest would have silently blocked
+the dev patches and Action bumps that *did* wait. Splitting them is what makes the automerge
+rules above actually fire.
+
+Majors get a PR each so CI tells me whether the upgrade is survivable before I look at it.
 
 ## Two things that look pointless and aren't
 

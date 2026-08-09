@@ -49,25 +49,35 @@
       "groupSlug": "all-minor-patch"
     },
     {
-      "description": "Majors are a human decision; park them on the dashboard.",
+      "description": "Majors get their own PR so CI runs on them, but never automerge.",
       "matchUpdateTypes": ["major"],
-      "dependencyDashboardApproval": true,
-      "groupName": null
+      "groupName": null,
+      "automerge": false
     },
     {
-      "description": "GitHub Actions on their own track, digest-pinned. Automerge only minor/patch, which are the only Actions update types the cooldown actually applies to — digest and pinDigest are handled by the no-cooldown rule below and always get a human.",
+      "description": "GitHub Actions minor/patch on their own track. These are the only Actions update types the cooldown applies to, so they are the only ones that automerge.",
       "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch"],
       "groupName": "github actions",
       "groupSlug": "github-actions",
-      "matchUpdateTypes": ["minor", "patch"],
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true
     },
     {
-      "description": "Dev dependencies patch-only automerge after the cooldown. Runtime dependencies are never automerged.",
+      "description": "Action digest bumps get no cooldown, and a repointed digest is how a hijacked action would reach me, so they always get a human. Grouped separately from the waited minor/patch Actions batch because a grouped branch only automerges when every update in it does.",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["digest", "pinDigest"],
+      "groupName": "github action digests",
+      "groupSlug": "github-action-digests",
+      "automerge": false
+    },
+    {
+      "description": "Dev dependency patches automerge after the cooldown. Grouped on their own, out of the weekly batch: a grouped branch only automerges when every update in it does, so leaving these in with runtime deps would mean they never automerge at all.",
       "matchDepTypes": ["devDependencies", "dev-dependencies", "dev"],
       "matchUpdateTypes": ["patch"],
+      "groupName": "dev dependencies (patch)",
+      "groupSlug": "dev-dependencies-patch",
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true
