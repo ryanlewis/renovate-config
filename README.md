@@ -80,7 +80,9 @@ Majors get a PR each so CI tells me whether the upgrade is survivable before I l
 
 Renovate never bumps the `go` directive in `go.mod`. It's a compatibility floor, and
 Renovate's docs say leave it alone by default. It *does* bump a `toolchain` directive, and
-`actions/setup-go` with `go-version-file: go.mod` prefers `toolchain` when both are there.
+`actions/setup-go` v7 with `go-version-file: go.mod` prefers `toolchain` when both are there.
+(v5 reads only the `go` line and resolves a minor-only `go 1.26` to the newest 1.26.x, so it
+lands in the same place by a different route; a patch-level `go 1.26.5` freezes it either way.)
 
 So a `go.mod` that says `go 1.26.5` freezes CI on that exact Go forever, and nothing in this
 preset will move it. That's how iss-ion-cannon sat on 1.26.5 with five stdlib advisories
