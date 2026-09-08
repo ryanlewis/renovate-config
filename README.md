@@ -76,6 +76,28 @@ rules above actually fire.
 
 Majors get a PR each so CI tells me whether the upgrade is survivable before I look at it.
 
+## Go repos: pin the toolchain, not the `go` directive
+
+Renovate never bumps the `go` directive in `go.mod`. It's a compatibility floor, and
+Renovate's docs say leave it alone by default. It *does* bump a `toolchain` directive, and
+`actions/setup-go` with `go-version-file: go.mod` prefers `toolchain` when both are there.
+
+So a `go.mod` that says `go 1.26.5` freezes CI on that exact Go forever, and nothing in this
+preset will move it. That's how iss-ion-cannon sat on 1.26.5 with five stdlib advisories
+until a weekly govulncheck run went red (September 2026). Write it as two lines instead:
+
+```
+go 1.26
+
+toolchain go1.26.8
+```
+
+Keep the `go` line minor-only: Go strips a `toolchain` line that equals the `go` line as
+redundant, which then fails any tidy-diff check in CI.
+
+Stdlib advisories don't come through the security fast lane either — OSV alerts are about
+modules. A `govulncheck` step on a weekly schedule is what catches them, so keep that gate.
+
 ## Two things that look pointless and aren't
 
 `internalChecksFilter: "strict"` is already the default in Renovate 44. It's written out so
