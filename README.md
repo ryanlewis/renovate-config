@@ -78,8 +78,11 @@ Majors get a PR each so CI tells me whether the upgrade is survivable before I l
 
 ## Go repos: pin the toolchain, not the `go` directive
 
-Renovate never bumps the `go` directive in `go.mod`. It's a compatibility floor, and
-Renovate's docs say leave it alone by default. It *does* bump a `toolchain` directive, and
+This preset never bumps the `go` directive in `go.mod`. It's a compatibility floor, and
+Renovate's docs say leave it alone by default. That default is not enough on its own, though:
+`:pinAllExceptPeerDependencies` treats a minor-only `go 1.26` as a range and "pins" it to the
+latest release, stripping the `toolchain` line as it goes (seen in iss-ion-cannon, September
+2026). So the preset disables the `golang` depType outright. It *does* bump a `toolchain` directive, and
 `actions/setup-go` v7 with `go-version-file: go.mod` prefers `toolchain` when both are there.
 (v5 reads only the `go` line and resolves a minor-only `go 1.26` to the newest 1.26.x, so it
 lands in the same place by a different route; a patch-level `go 1.26.5` freezes it either way.)

@@ -37,6 +37,12 @@
   },
   "packageRules": [
     {
+      "description": "Never bump the go directive. It is a compatibility floor, and a patch-level value freezes CI on that exact Go forever. Without this, :pinAllExceptPeerDependencies pins `go 1.26` to the latest release and strips the toolchain line. The toolchain directive still updates.",
+      "matchManagers": ["gomod"],
+      "matchDepTypes": ["golang"],
+      "enabled": false
+    },
+    {
       "description": "npm and PyPI have self-serve publish and the worst recent abuse record; longer cooldown than the rest.",
       "matchDatasources": ["npm", "pypi"],
       "minimumReleaseAge": "7 days",
