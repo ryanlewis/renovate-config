@@ -38,9 +38,22 @@ nothing ever gets fast-tracked. So turn the feed on before adding cooldowns, not
 It's also the right feed for this kind of attack — it picks up the OpenSSF malicious
 package advisories as `MAL-*`, and Renovate won't offer a version flagged that way at all.
 
-**Never runs lockfile maintenance.** Renovate ignores the cooldown during it and lets the
-package manager re-resolve the whole dependency tree against live registries. That's the
-one that makes a cooldown look like it's working when it isn't.
+**Runs lockfile maintenance only when I ask.** Renovate ignores the cooldown during it and
+lets the package manager re-resolve the whole dependency tree against live registries.
+That's the one that makes a cooldown look like it's working when it isn't. So it's switched
+on for the npm manager (npm, pnpm and Yarn lockfiles) only, and waits for approval: it shows
+up as a box on the Dependency Dashboard and nothing happens until I tick it. Every other
+manager, bun included, never runs it.
+
+It's there because it's the only way Renovate can fix a security alert on a *transitive*
+dependency. Alert PRs only cover deps named in `package.json`; a vulnerable package that
+only lives in the lockfile gets no PR at all (js-yaml in shout-sh, September 2026). It is
+not automatic: when an alert like that opens, tick the box.
+
+Ticking it deletes the lockfile and re-resolves everything, not just the vulnerable
+package. The only cooldown left is the package manager's own: pnpm honours
+`minimumReleaseAge` in `pnpm-workspace.yaml`, so set that in pnpm repos. npm repos with a
+`package-lock.json` get no cooldown at all on this run.
 
 **Only automerges things that actually waited.** Renovate applies the cooldown to `major`,
 `minor` and `patch` — and *not* to `pin`, `pinDigest`, `replacement`, `digest`,
