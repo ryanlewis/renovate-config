@@ -51,9 +51,18 @@ only lives in the lockfile gets no PR at all (js-yaml in shout-sh, September 202
 not automatic: when an alert like that opens, tick the box.
 
 Ticking it deletes the lockfile and re-resolves everything, not just the vulnerable
-package. The only cooldown left is the package manager's own: pnpm honours
-`minimumReleaseAge` in `pnpm-workspace.yaml`, so set that in pnpm repos. npm repos with a
-`package-lock.json` get no cooldown at all on this run.
+package. Renovate's own cooldown doesn't filter anything on this run; what's left is the
+package manager's:
+
+- npm: Renovate runs `npm install --before=<5 days ago>`, taken from the top-level
+  `minimumReleaseAge`. That's 5 days, not 7 — the npm rule matches on datasource, and a
+  lockfile update has none.
+- pnpm: honours `minimumReleaseAge` in `pnpm-workspace.yaml`, so set that in pnpm repos.
+- Yarn: Renovate passes nothing, so it only gets a cooldown if the repo's `.yarnrc.yml`
+  sets one.
+
+The flip side: if the fixed version of the transitive dep is newer than that cooldown, the
+PR won't contain it and the alert stays open. Wait it out, then tick the PR's rebase box.
 
 **Only automerges things that actually waited.** Renovate applies the cooldown to `major`,
 `minor` and `patch` — and *not* to `pin`, `pinDigest`, `replacement`, `digest`,

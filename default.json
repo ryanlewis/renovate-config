@@ -22,7 +22,11 @@
   "prCreation": "not-pending",
   "ignoreScripts": true,
   "postUpdateOptions": ["gomodTidy"],
-  "lockFileMaintenance": { "enabled": true, "dependencyDashboardApproval": true },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "dependencyDashboardApproval": true,
+    "minimumReleaseAgeBehaviour": "timestamp-optional"
+  },
   "osvVulnerabilityAlerts": true,
   "vulnerabilityAlerts": {
     "enabled": true,
@@ -43,7 +47,7 @@
       "enabled": false
     },
     {
-      "description": "Lock file maintenance for the npm manager (npm, pnpm and Yarn lockfiles) only, and only when ticked on the Dependency Dashboard. It is the one way to fix an alert on a transitive dep: Renovate raises alert PRs for package.json deps only. Ticking it re-resolves the whole tree and Renovate's minimumReleaseAge does not apply, so it is never automatic.",
+      "description": "Lock file maintenance for the npm manager (npm, pnpm and Yarn lockfiles) only, and only when ticked on the Dependency Dashboard. It is the one way to fix an alert on a transitive dep: Renovate raises alert PRs for package.json deps only. Ticking it re-resolves the whole tree, so it is never automatic. The only cooldown on that run is the package manager's: Renovate passes npm --before from the top-level minimumReleaseAge (5 days; the 7-day npm rule matches on datasource, which a lock file update has none of), and pnpm and Yarn only honour their own settings. timestamp-optional stops the lock file PR carrying a stability check that can never pass, since a lock file update has no release timestamp.",
       "matchUpdateTypes": ["lockFileMaintenance"],
       "matchManagers": ["!npm"],
       "enabled": false
