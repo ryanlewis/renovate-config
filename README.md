@@ -38,19 +38,23 @@ nothing ever gets fast-tracked. So turn the feed on before adding cooldowns, not
 It's also the right feed for this kind of attack — it picks up the OpenSSF malicious
 package advisories as `MAL-*`, and Renovate won't offer a version flagged that way at all.
 
-**Runs lockfile maintenance only when I ask.** Renovate ignores the cooldown during it and
+**Runs lockfile maintenance once a month.** Renovate ignores the cooldown during it and
 lets the package manager re-resolve the whole dependency tree against live registries.
 That's the one that makes a cooldown look like it's working when it isn't. So it's switched
-on for the npm manager (npm, pnpm and Yarn lockfiles) only, and waits for approval: it shows
-up as a box on the Dependency Dashboard and nothing happens until I tick it. Every other
-manager, bun included, never runs it.
+on for the npm manager (npm, pnpm and Yarn lockfiles) only, runs on the first Monday of the
+month before 9am, and never automerges. Every other manager, bun included, never runs it.
+
+The schedule is the cron `* 0-8 1-7 * 1`. Plain cron would read day-of-month and
+day-of-week as either/or and run it every Monday plus the 1st–7th; Renovate ANDs them, so
+it means "a Monday in the first seven days", which is the first Monday.
 
 It's there because it's the only way Renovate can fix a security alert on a *transitive*
 dependency. Alert PRs only cover deps named in `package.json`; a vulnerable package that
-only lives in the lockfile gets no PR at all (js-yaml in shout-sh, September 2026). It is
-not automatic: when an alert like that opens, tick the box.
+only lives in the lockfile gets no PR at all (js-yaml in shout-sh, September 2026). If one
+opens mid-month and can't wait, tick lock file maintenance on the Dependency Dashboard to
+run it early.
 
-Ticking it deletes the lockfile and re-resolves everything, not just the vulnerable
+Each run deletes the lockfile and re-resolves everything, not just the vulnerable
 package. Renovate's own cooldown doesn't filter anything on this run; what's left is the
 package manager's:
 
