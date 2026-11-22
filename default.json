@@ -12,7 +12,7 @@
     "abandonments:recommended"
   ],
   "timezone": "Europe/London",
-  "schedule": ["before 9am on monday"],
+  "schedule": ["* 7-22 * * *"],
   "labels": ["dependencies"],
   "prConcurrentLimit": 10,
   "prHourlyLimit": 0,
@@ -24,7 +24,7 @@
   "postUpdateOptions": ["gomodTidy"],
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": ["* 0-8 1-7 * 1"],
+    "schedule": ["* 7-22 1-7 * 1"],
     "minimumReleaseAgeBehaviour": "timestamp-optional"
   },
   "osvVulnerabilityAlerts": true,
@@ -47,7 +47,7 @@
       "enabled": false
     },
     {
-      "description": "Lock file maintenance for the npm manager (npm, pnpm and Yarn lockfiles) only, once a month on the first Monday before 9am (the cron ANDs day-of-month 1-7 with Monday). It is the one way to fix an alert on a transitive dep: Renovate raises alert PRs for package.json deps only. It re-resolves the whole tree, so it never automerges; a human reads every one. The only cooldown on that run is the package manager's: Renovate passes npm --before from the top-level minimumReleaseAge (5 days; the 7-day npm rule matches on datasource, which a lock file update has none of), and pnpm and Yarn only honour their own settings. timestamp-optional stops the lock file PR carrying a stability check that can never pass, since a lock file update has no release timestamp.",
+      "description": "Lock file maintenance for the npm manager (npm, pnpm and Yarn lockfiles) only, once a month on the first Monday between 7am and 11pm (the cron ANDs day-of-month 1-7 with Monday). It is the one way to fix an alert on a transitive dep: Renovate raises alert PRs for package.json deps only. It re-resolves the whole tree, so it never automerges; a human reads every one. The only cooldown on that run is the package manager's: Renovate passes npm --before from the top-level minimumReleaseAge (5 days; the 7-day npm rule matches on datasource, which a lock file update has none of), and pnpm and Yarn only honour their own settings. timestamp-optional stops the lock file PR carrying a stability check that can never pass, since a lock file update has no release timestamp.",
       "matchUpdateTypes": ["lockFileMaintenance"],
       "matchManagers": ["!npm"],
       "enabled": false
@@ -59,7 +59,7 @@
       "internalChecksFilter": "strict"
     },
     {
-      "description": "One batched PR a week for everything non-major.",
+      "description": "One batched PR for everything non-major, kept up to date as new versions clear the cooldown.",
       "matchUpdateTypes": ["minor", "patch", "digest", "pin", "pinDigest"],
       "groupName": "all non-major dependencies",
       "groupSlug": "all-minor-patch"
@@ -89,7 +89,7 @@
       "automerge": false
     },
     {
-      "description": "Dev dependency patches automerge after the cooldown. Grouped on their own, out of the weekly batch: a grouped branch only automerges when every update in it does, so leaving these in with runtime deps would mean they never automerge at all.",
+      "description": "Dev dependency patches automerge after the cooldown. Grouped on their own, out of the non-major batch: a grouped branch only automerges when every update in it does, so leaving these in with runtime deps would mean they never automerge at all.",
       "matchDepTypes": ["devDependencies", "dev-dependencies", "dev"],
       "matchUpdateTypes": ["patch"],
       "groupName": "dev dependencies (patch)",

@@ -42,9 +42,9 @@ package advisories as `MAL-*`, and Renovate won't offer a version flagged that w
 lets the package manager re-resolve the whole dependency tree against live registries.
 That's the one that makes a cooldown look like it's working when it isn't. So it's switched
 on for the npm manager (npm, pnpm and Yarn lockfiles) only, runs on the first Monday of the
-month before 9am, and never automerges. Every other manager, bun included, never runs it.
+month between 7am and 11pm, and never automerges. Every other manager, bun included, never runs it.
 
-The schedule is the cron `* 0-8 1-7 * 1`. Plain cron would read day-of-month and
+The schedule is the cron `* 7-22 1-7 * 1`. Plain cron would read day-of-month and
 day-of-week as either/or and run it every Monday plus the 1st–7th; Renovate ANDs them, so
 it means "a Monday in the first seven days", which is the first Monday.
 
