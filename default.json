@@ -104,6 +104,13 @@
       "automerge": false
     },
     {
+      "description": "Cloudflare's cf CLI and wrangler move together, in one PR that never automerges. Each cf release requires a minimum wrangler and reads only the build output that wrangler version writes, so either bump alone breaks `cf build` (cf 1.0.0-rc.1 needs wrangler 4.163+, whose output beta.23 can't read). A cf prerelease jump (beta to rc) is classed as a patch, so without this rule the dev dependencies (patch) group would automerge a broken half. After the dev-dependency and major rules so this group wins.",
+      "matchPackageNames": ["cf", "wrangler"],
+      "groupName": "cf and wrangler",
+      "groupSlug": "cf-wrangler",
+      "automerge": false
+    },
+    {
       "description": "Renovate does not enforce minimumReleaseAge on these update types, so never automerge them. Per docs, minimumReleaseAge is supported for major/minor/patch only; it is not supported for pin, pinDigest, replacement or (generally) digest, and lockFileMaintenance, lockfileUpdate, rollback and bump ignore it entirely. Nothing merges without a soak period. This rule is last so it wins over any automerge granted above.",
       "matchUpdateTypes": [
         "bump",
